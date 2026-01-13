@@ -79,3 +79,18 @@ button:hover {
   background: #ff9acb;
 }
 
+.upload-section {
+  margin-top: 10px;
+  text-align: center;
+}
+
+.upload-btn {
+  display: inline-block;
+  padding: 8px 14px;
+  font-size: 0.5rem;
+  border-radius: 12px;
+  border: 2px dashed #ff4fa3;
+  color: #ff4fa3;
+  cursor: pointer;
+  background: #ffe6f1;
+}

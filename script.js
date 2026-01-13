@@ -1,4 +1,4 @@
-const outfits = [
+let outfits = [
   "out1.jfif",
   "out2.jfif",
   "out3.jfif",
@@ -16,28 +16,66 @@ const outfits = [
   "out15.jfif"
 ];
 
+// uploaded images (stored as base64)
+let uploadedOutfits = JSON.parse(localStorage.getItem("uploadedOutfits")) || [];
 
+let allOutfits = [...outfits, ...uploadedOutfits];
 let currentIndex = 0;
+
 const img = document.getElementById("outfit-img");
+const uploadInput = document.getElementById("uploadInput");
 
 function showOutfit() {
-  img.src = `images/outfits/${outfits[currentIndex]}`;
+  const current = allOutfits[currentIndex];
+
+  if (current.startsWith("data:")) {
+    img.src = current; // uploaded image
+  } else {
+    img.src = `images/outfits/${current}`; // default images
+  }
 }
 
+/* 🔀 RANDOM ORDER */
+function shuffleOutfits() {
+  for (let i = allOutfits.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [allOutfits[i], allOutfits[j]] = [allOutfits[j], allOutfits[i]];
+  }
+}
+
+/* BUTTON CONTROLS */
 document.getElementById("nextBtn").addEventListener("click", () => {
-  currentIndex = (currentIndex + 1) % outfits.length;
+  currentIndex = (currentIndex + 1) % allOutfits.length;
   showOutfit();
 });
 
 document.getElementById("prevBtn").addEventListener("click", () => {
-  currentIndex = (currentIndex - 1 + outfits.length) % outfits.length;
+  currentIndex = (currentIndex - 1 + allOutfits.length) % allOutfits.length;
   showOutfit();
 });
 
 document.getElementById("randomBtn").addEventListener("click", () => {
-  currentIndex = Math.floor(Math.random() * outfits.length);
+  shuffleOutfits();
+  currentIndex = 0;
   showOutfit();
 });
 
-// show first outfit on page load
+/* 📸 UPLOAD HANDLING */
+uploadInput.addEventListener("change", () => {
+  const file = uploadInput.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    uploadedOutfits.push(reader.result);
+    localStorage.setItem("uploadedOutfits", JSON.stringify(uploadedOutfits));
+
+    allOutfits = [...outfits, ...uploadedOutfits];
+    currentIndex = allOutfits.length - 1;
+    showOutfit();
+  };
+
+  reader.readAsDataURL(file);
+});
+
 showOutfit();
